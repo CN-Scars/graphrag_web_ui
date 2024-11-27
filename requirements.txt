@@ -1,0 +1,4 @@
+graphrag>=0.4.0
+python-dotenv
+PyYAML
+streamlit>=1.27.0
