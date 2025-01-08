@@ -173,7 +173,12 @@ def manage_files(kb_path):
     # Upload files
     uploaded_files = st.file_uploader(
         "Upload new TXT files", type=["txt"], accept_multiple_files=True)
-    if uploaded_files:
+
+    # Initialize session state flag
+    if 'files_uploaded' not in st.session_state:
+        st.session_state['files_uploaded'] = False
+
+    if uploaded_files and not st.session_state['files_uploaded']:
         for uploaded_file in uploaded_files:
             save_path = input_path / uploaded_file.name
             try:
@@ -183,7 +188,13 @@ def manage_files(kb_path):
             except Exception as e:
                 st.error(f"Error uploading file '{uploaded_file.name}': {e}")
         st.success(f"Uploaded {len(uploaded_files)} files.")
+        # Set flag to indicate files have been uploaded
+        st.session_state['files_uploaded'] = True
         rerun_method()  # Automatically refresh the page
+
+    # Reset the flag after rerun
+    if st.session_state.get('files_uploaded', False):
+        st.session_state['files_uploaded'] = False
 
 
 def run_graphrag_command(args, cwd):
