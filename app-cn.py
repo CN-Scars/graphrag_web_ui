@@ -173,7 +173,12 @@ def manage_files(kb_path):
     # 上传文件
     uploaded_files = st.file_uploader(
         "上传新的 txt 文件", type=["txt"], accept_multiple_files=True)
-    if uploaded_files:
+
+    # 初始化 session state 标记
+    if 'files_uploaded' not in st.session_state:
+        st.session_state['files_uploaded'] = False
+
+    if uploaded_files and not st.session_state['files_uploaded']:
         for uploaded_file in uploaded_files:
             save_path = input_path / uploaded_file.name
             try:
@@ -183,7 +188,13 @@ def manage_files(kb_path):
             except Exception as e:
                 st.error(f"上传文件 '{uploaded_file.name}' 时出错: {e}")
         st.success(f"共上传了 {len(uploaded_files)} 个文件。")
+        # 设置标记以指示文件已上传
+        st.session_state['files_uploaded'] = True  # 设置标记为已上传
         rerun_method()  # 自动刷新页面
+
+    # 在页面重新加载后重置标记
+    if st.session_state.get('files_uploaded', False):
+        st.session_state['files_uploaded'] = False
 
 
 def run_graphrag_command(args, cwd):
